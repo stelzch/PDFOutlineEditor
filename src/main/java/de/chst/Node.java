@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node<T> {
-    private T value;
-    private List<Node<T>> children;
+    private final T value;
+    private final List<Node<T>> children;
 
     public Node(T value) {
         this.value = value;
@@ -21,11 +21,11 @@ public class Node<T> {
         return children.size() > 0;
     }
 
-    public void addChild(Node child) {
+    public void addChild(Node<T> child) {
         children.add(child);
     }
 
-    public boolean removeChild(Node child) {
+    public boolean removeChild(Node<T> child) {
         return children.remove(child);
     }
 
@@ -42,7 +42,7 @@ public class Node<T> {
         if (!(other instanceof Node)) {
             return false;
         }
-        Node o = (Node) other;
+        Node<?> o = (Node<?>) other;
 
         /* Check for null value */
         if (o.getValue() == null){
@@ -74,7 +74,7 @@ public class Node<T> {
         if (value == null) {
             result.append("null");
         } else {
-            result.append(value.toString());
+            result.append(value);
         }
         result.append(", ");
 

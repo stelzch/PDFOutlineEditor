@@ -1,9 +1,9 @@
 package de.chst;
 
 public class OutlineEntry {
-    private String chapterNum;
-    private String description;
-    private int pageNumber;
+    private final String chapterNum;
+    private final String description;
+    private final int pageNumber;
 
     public OutlineEntry(String chapterNum, String description, int pageNumber) {
         this.chapterNum = chapterNum;
@@ -23,16 +23,6 @@ public class OutlineEntry {
         return chapterNum;
     }
 
-    public int getLevel() {
-        /* Count the number of dots */
-        int found = 0;
-        for (char c : chapterNum.toCharArray()) {
-            if (c == '.') found++;
-        }
-
-        return found;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o instanceof OutlineEntry) {
@@ -48,11 +38,10 @@ public class OutlineEntry {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append("(OutlineEntry ");
-        result.append(this.getChapterNum()).append(", ");
-        result.append(this.getDescription()).append(", ");
-        result.append(this.getPageNumber()).append(")");
-        return result.toString();
+        String result = "(OutlineEntry " +
+                this.getChapterNum() + ", " +
+                this.getDescription() + ", " +
+                this.getPageNumber() + ")";
+        return result;
     }
 }

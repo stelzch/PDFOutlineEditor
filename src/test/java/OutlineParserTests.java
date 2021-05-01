@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class OutlineParserTests {
 
@@ -21,14 +20,13 @@ public class OutlineParserTests {
                 "Final remarks.........99"
         };
 
-        Graph<OutlineEntry> expected = new Graph<OutlineEntry>(new Node<OutlineEntry>(null, Arrays.asList(
+        Graph<OutlineEntry> expected = new Graph<>(new Node<>(null, Arrays.asList(
                 new Node<>(new OutlineEntry("", "Table of Contents", 5)),
                 new Node<>(new OutlineEntry("", "Chapter 1", 6)),
                 new Node<>(new OutlineEntry("", "Chapter 2", 11)),
                 new Node<>(new OutlineEntry("", "Final remarks", 99)))));
 
         Graph<OutlineEntry> g = OutlineParser.parseLines(Arrays.asList(lines));
-        List<Node<OutlineEntry>> entries = g.getRoot().getChildren();
         assertEquals(expected, g);
     }
 
@@ -60,9 +58,27 @@ public class OutlineParserTests {
                 new Node<>(new OutlineEntry("", "Final remarks", 999))
         )));
         var actual = OutlineParser.parseLines(Arrays.asList(lines));
+        assertEquals(expected, actual);
+    }
 
-        System.out.println(actual.toGraphviz());
+    @Test
+    public void testSkippedLevels() {
+        String[] lines = {
+                "1 High-Level Entry.............5",
+                "1.2.3.2 Skipped a few........6"
+        };
 
+        var expected = new Graph<>(new Node<>(null,
+                Arrays.asList(
+                        new Node<>(new OutlineEntry("1", "High-Level Entry", 5), Arrays.asList(
+                                new Node<>(new OutlineEntry("2", "", -1), Arrays.asList(
+                                        new Node<>(new OutlineEntry("3", "", -1), Arrays.asList(
+                                                new Node<>(new OutlineEntry("2", "Skipped a few", 6))
+                                        )))
+                                ))
+                        ))));
+
+        var actual = OutlineParser.parseLines(Arrays.asList(lines));
         assertEquals(expected, actual);
     }
 }

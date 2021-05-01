@@ -1,7 +1,7 @@
 package de.chst;
 
 public class Graph<T> {
-    private Node<T> root;
+    private final Node<T> root;
 
     public Graph(Node<T> root) {
         this.root = root;
@@ -14,10 +14,10 @@ public class Graph<T> {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof Graph)) {
+        if (!(other instanceof Graph<?>)) {
             return false;
         }
-        Graph o = (Graph) other;
+        Graph<?> o = (Graph<?>) other;
 
         if (getRoot() == null && o.getRoot() != null)
             return false;
