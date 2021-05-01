@@ -45,4 +45,14 @@ public class OutlineEntry {
 
         return false;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("(OutlineEntry ");
+        result.append(this.getChapterNum()).append(", ");
+        result.append(this.getDescription()).append(", ");
+        result.append(this.getPageNumber()).append(")");
+        return result.toString();
+    }
 }
