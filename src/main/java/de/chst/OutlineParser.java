@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  *  description and a page number of -1.
  */
 public class OutlineParser {
-    static final String REGEX_OUTLINE_ENTRY = "^(?<chapter>[0-9.]+ )?(?<heading>.+?)\\.{2,}(?<pagenum>[0-9]+)$";
+    static final String REGEX_OUTLINE_ENTRY = "^(?<chapter>[0-9.]+ )?(?<heading>.+?)\\.{2,}(?<pagenum>[0-9IVXLCDMivxlcdm]+)$";
     static final Pattern OUTLINE_PATTERN = Pattern.compile(REGEX_OUTLINE_ENTRY);
 
     private OutlineParser() {
@@ -55,21 +55,31 @@ public class OutlineParser {
             Matcher m = OUTLINE_PATTERN.matcher(line);
 
             /* Ignore invalid entries */
-            if (!m.find()) continue;
+            if (!m.find()) {
+                System.err.println("Skipping invalid line '" + line + "'");
+            }
 
             String chapterNum = m.group("chapter");
 
-            int pageNum;
+            int pageNum = -1;
             if (resolvePageLabels) {
                 pageNum = resolver.getRealPageNumber(m.group("pagenum"));
             } else {
-                pageNum = Integer.parseInt(m.group("pagenum"));
+                try {
+                    pageNum = Integer.parseInt(m.group("pagenum"));
+                } catch (NumberFormatException e) {
+                    pageNum = -1;
+                }
             }
 
-            addToGraph(g,
-                    (chapterNum == null) ? "" : chapterNum,
-                    m.group("heading"),
-                    pageNum);
+            if (pageNum >= 0) {
+                addToGraph(g,
+                        (chapterNum == null) ? "" : chapterNum,
+                        m.group("heading"),
+                        pageNum);
+            } else {
+                System.err.println("Skipping line '" + line + "' because of invalid page number");
+            }
         }
 
         return g;

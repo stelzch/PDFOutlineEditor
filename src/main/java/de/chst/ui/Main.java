@@ -3,8 +3,11 @@ package de.chst.ui;
 import de.chst.*;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.kohsuke.args4j.CmdLineException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,7 +15,12 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        CommandLineArgs a = new CommandLineArgs(args);
+        CommandLineArgs a = null;
+        try {
+            a = new CommandLineArgs(args);
+        } catch (CmdLineException e) {
+            return;
+        }
 
         PDDocument doc;
         try {
@@ -43,8 +51,24 @@ public class Main {
         Graph<OutlineEntry> outline = OutlineParser.parseLines(lines, a.resolvePageNames, resolver);
         OutlineInjector.inject(doc, outline);
 
+        long fileSize = a.inputFile.length();
+
+
         try {
-            doc.save(a.outputFile);
+            if (a.outputFile != a.inputFile) {
+                doc.save(a.outputFile);
+            } else {
+                /* Buffer file in memory */
+                ByteArrayOutputStream buffer;
+                if (fileSize < Integer.MAX_VALUE) {
+                    buffer = new ByteArrayOutputStream((int) fileSize);
+                } else {
+                    buffer = new ByteArrayOutputStream((int) a.inputFile.length());
+                }
+
+                doc.save(buffer);
+                buffer.writeTo(new FileOutputStream(a.outputFile));
+            }
         } catch(IOException e) {
             System.err.println("Could not write to output file:" + e.getLocalizedMessage());
         }

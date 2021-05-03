@@ -11,16 +11,18 @@ public class CommandLineArgs {
     @Option(name = "-r", aliases = { "--resolve-page-labels"}, usage = "Consider the page numbers as page labels.")
     boolean resolvePageNames;
 
+    @Option(name = "-o", aliases = { "---output" }, usage = "Output file")
+    File outputFile;
+
     @Argument(required = true, usage = "The input PDF file", index = 0)
     File inputFile;
 
     @Argument(required = true, usage = "A file specifying the outline", index = 1)
     File outlineFile;
 
-    @Argument(required = true, usage = "Output file", index = 2)
-    File outputFile;
 
-    public CommandLineArgs(String... args) {
+
+    public CommandLineArgs(String... args) throws CmdLineException {
         CmdLineParser p = new CmdLineParser(this);
         try {
             p.parseArgument(args);
@@ -33,12 +35,13 @@ public class CommandLineArgs {
                 throw new CmdLineException("Outline file does not exist");
             }
 
-            if (!outputFile.canWrite()) {
-                //throw new CmdLineException("Unable to write to output file");
+            if (outputFile == null) {
+                outputFile = inputFile;
             }
         } catch(CmdLineException e) {
             System.err.println(e.getLocalizedMessage());
             p.printUsage(System.err);
+            throw e;
         }
     }
 }
