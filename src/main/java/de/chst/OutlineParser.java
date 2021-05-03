@@ -1,5 +1,7 @@
 package de.chst;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +45,10 @@ public class OutlineParser {
      * @param lines the outline in the specified text format
      */
     public static Graph<OutlineEntry> parseLines(Iterable<String> lines) {
+        return parseLines(lines, false, null);
+    }
+
+    public static Graph<OutlineEntry> parseLines(Iterable<String> lines, boolean resolvePageLabels, PageResolver resolver) {
         Graph<OutlineEntry> g = new Graph<>(new Node<>(null));
 
         for (String line : lines) {
@@ -53,10 +59,17 @@ public class OutlineParser {
 
             String chapterNum = m.group("chapter");
 
+            int pageNum;
+            if (resolvePageLabels) {
+                pageNum = resolver.getRealPageNumber(m.group("pagenum"));
+            } else {
+                pageNum = Integer.parseInt(m.group("pagenum"));
+            }
+
             addToGraph(g,
                     (chapterNum == null) ? "" : chapterNum,
                     m.group("heading"),
-                    Integer.parseInt(m.group("pagenum")));
+                    pageNum);
         }
 
         return g;
@@ -87,8 +100,7 @@ public class OutlineParser {
         /* Find correct child node. */
         String currentSubPart = chapterNums.pop();
         for (Node<OutlineEntry> child : n.getChildren()) {
-            boolean bisChild = isChild(child, currentSubPart);
-            if (bisChild) {
+            if (isChild(child, currentSubPart)) {
                 /* Descend into current subgraph */
                 recursiveAdd(child, chapterNums, e);
                 return;

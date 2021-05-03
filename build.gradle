@@ -1,12 +1,28 @@
 plugins {
     id 'java'
+    id 'application'
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
-group 'org.example'
+group 'de.chst'
 version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+application {
+    mainClass = 'de.chst.ui.Main'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'de.chst.ui.Main'
+    }
+}
+
+ext {
+    javaMainClass = 'de.chst.ui.Main'
 }
 
 dependencies {
@@ -14,7 +30,10 @@ dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter')
 
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.0-RC1'
+    implementation group: 'args4j', name : 'args4j', version: '2.33'
+    implementation group: 'args4j', name : 'args4j-site', version: '2.33'
 }
+
 
 test {
     useJUnitPlatform()
@@ -23,3 +42,4 @@ test {
         events "passed", "skipped", "failed"
     }
 }
+
