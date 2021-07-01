@@ -37,3 +37,6 @@ The outline text file must adhere to the following specification:
 2. the description (the actual label of the outline entry) separated with two or more dots from
 3. the page number. If you specify the `--resolve-page-labels` option, you can also use page numbers as displayed by the
    PDF viewer, such as roman numerals for the preamble.
+   
+## Similar projects
+* [pdfoutliner](https://pypi.org/project/pdfoutliner)
