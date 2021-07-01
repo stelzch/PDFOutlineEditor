@@ -52,11 +52,14 @@ public class OutlineParser {
         Graph<OutlineEntry> g = new Graph<>(new Node<>(null));
 
         for (String line : lines) {
+            if (line.isEmpty()) continue;
+
             Matcher m = OUTLINE_PATTERN.matcher(line);
 
             /* Ignore invalid entries */
-            if (!m.find()) {
+            if (!m.matches()) {
                 System.err.println("Skipping invalid line '" + line + "'");
+                continue;
             }
 
             String chapterNum = m.group("chapter");
